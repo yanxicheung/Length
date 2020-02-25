@@ -10,14 +10,12 @@
 
 - 3Mile != 4Mile
 
-  
+### 设计考虑：
 
-  ### 设计考虑：
-
-  #### 消除知识重复：
+#### 消除知识重复：
 
   ```c++
-  bool Mile::operator ==(const Mile& rhs)
+bool Mile::operator ==(const Mile& rhs)
   {
       return this->amount == rhs.amount;
   }
@@ -31,7 +29,7 @@
   #### 抽象：
 
   ```c++
-  using Amount = unsigned int;
+using Amount = unsigned int;
   ```
 
   让客户不再依赖具体的类型，而是提供一个抽像，只是抽象的背后的本质仍然是`unsigned int`。
@@ -63,6 +61,38 @@
 重复，很多时候不仅仅是重复这么简单。其背后往往意味着重大的设计缺陷，一些核心的本质概念没有被发现。
 
 如果这样的重复得不到消除，未来的演进会越来越别扭。会进一步带来更强的耦合，快速增长的工作量，更加难以理解的设计和实现，更多出现bug的机会。
+
+### 设计考虑：
+
+#### 提取基类：
+
+```c++
+struct Length
+{
+    bool operator==(const Length&rhs) const;
+    bool operator!=(const Length&rhs) const;
+protected:
+    Length(const Amount &amountInBaseUnit);
+private:
+    Amount amountInBaseUnit;
+};
+```
+
+通过提取基类来消除代码重复。我们将Length的构造函数设置为`protected`的，Why？
+
+因为按照需求，以及我们当前的设计，既然存在`Mile`和`Yard`等具体可以用来表现长度的对象，所以我们不希望用户直接使用我们为了消除重复而抽取出来的基类来构造长度对象。
+
+至于`Yard `和 `Mile`的实现只需要将各自的`amount`转换成`Length`要求的基本单位即可。
+
+#### 提高表现力：
+
+```c++
+const unsigned int YARDS_PER_MILE = 1760;
+Mile::Mile(const Amount& amount):Length(amount*YARDS_PER_MILE)
+{
+
+}
+```
 
 
 
