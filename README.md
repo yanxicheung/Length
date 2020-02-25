@@ -94,6 +94,30 @@ Mile::Mile(const Amount& amount):Length(amount*YARDS_PER_MILE)
 }
 ```
 
+1760是一个magic number，应该定义一个常量使其语义更加明确。
+
+#### 消除冗余：
+
+目前对于`Mile`和`Yard`他们的唯一职责就是将自己的单位转换成基准单位，`Mile`和`Yard`的实现仅仅是转换系数的不同：
+
+```c++
+Mile::Mile(const Amount& amount):Length(amount*YARDS_PER_MILE){}
+Yard::Yard(const Amount& amount):Length(amount*YARDS_PER_YARD){}
+```
+
+我们可以将这个实现转换成`Length`的一个构造函数。这样**将自己单位转换成基准单位**的这个职责现在由基类`Length`承担。
+
+```c++
+Length::Length(const Amount& amount, unsigned int conversionFactor):
+amountInBaseUnit(amount*conversionFactor)
+{
+}
+```
+
+至此`Mile`和`Yard`不再承担任何职责，可以将他们删除了。
+
+#### 提高UI表现力：
+
 
 
 ## 需求三：

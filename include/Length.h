@@ -3,12 +3,14 @@
 
 #include "Amount.h"
 
+const unsigned int YARDS_PER_MILE = 1760;
+const unsigned int YARDS_PER_YARD = 1;
+
 struct Length
 {
+    Length(const Amount &amount,unsigned int conversionFactor);
     bool operator==(const Length&rhs) const;
     bool operator!=(const Length&rhs) const;
-protected:
-    Length(const Amount &amountInBaseUnit);
 private:
     Amount amountInBaseUnit;
 };

@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
-#include "Mile.h"
-#include "Yard.h"
+#include "Length.h"
 struct MileTest:testing::Test
 {
 
@@ -8,13 +7,13 @@ struct MileTest:testing::Test
 
 TEST_F(MileTest,should_equal)
 {
-    ASSERT_TRUE(Mile(3) == Mile(3));
+    ASSERT_TRUE(Length(3,YARDS_PER_MILE) == Length(3,YARDS_PER_MILE));
 }
 
 TEST_F(MileTest,should_not_equal)
 {
-    ASSERT_TRUE(Mile(3) != Mile(2));
-    ASSERT_TRUE(Mile(3) != Mile(4));
+    ASSERT_TRUE(Length(3,YARDS_PER_MILE) != Length(2,YARDS_PER_MILE));
+    ASSERT_TRUE(Length(3,YARDS_PER_MILE) != Length(4,YARDS_PER_MILE));
 }
 
 //////////////////////////////////////
@@ -25,15 +24,15 @@ struct YardTest:testing::Test
 
 TEST_F(YardTest,should_equal)
 {
-    ASSERT_TRUE(Yard(3) == Yard(3));
-    ASSERT_TRUE(Mile(1) == Yard(1760));
-    ASSERT_TRUE(Yard(1760) == Mile(1));
+    ASSERT_TRUE(Length(3,YARDS_PER_YARD) == Length(3,YARDS_PER_YARD));
+    ASSERT_TRUE(Length(1,YARDS_PER_MILE) == Length(1760,YARDS_PER_YARD));
+    ASSERT_TRUE(Length(1760,YARDS_PER_YARD) == Length(1,YARDS_PER_MILE));
 }
 
 TEST_F(YardTest,should_not_equal)
 {
-    ASSERT_TRUE(Yard(3) != Yard(4));
-    ASSERT_TRUE(Mile(1) != Yard(1761));
-    ASSERT_TRUE(Yard(1761) != Mile(1));
+    ASSERT_TRUE(Length(3,YARDS_PER_YARD) != Length(4,YARDS_PER_YARD));
+    ASSERT_TRUE(Length(1,YARDS_PER_MILE) != Length(1761,YARDS_PER_YARD));
+    ASSERT_TRUE(Length(1761,YARDS_PER_YARD) != Length(1,YARDS_PER_MILE));
 }
 
