@@ -3,16 +3,16 @@
 
 #include "Amount.h"
 
-const unsigned int BASE_UNIT = 1;
-const unsigned int BASE_PER_INCH = BASE_UNIT;
-const unsigned int BASE_PER_FEET = 12 * BASE_PER_INCH;
-const unsigned int BASE_PER_YARD = 3 * BASE_PER_FEET;
-const unsigned int BASE_PER_MILE = 1760 * BASE_PER_YARD;
+const unsigned int BASE_CONV_FACTOR = 1;
+const unsigned int INCH_CONV_FACTOR = BASE_CONV_FACTOR;
+const unsigned int FEET_CONV_FACTOR = 12 * INCH_CONV_FACTOR;
+const unsigned int YARD_CONV_FACTOR = 3 * FEET_CONV_FACTOR;
+const unsigned int MILE_CONV_FACTOR = 1760 * YARD_CONV_FACTOR;
 
-const unsigned int MILE = BASE_PER_MILE;
-const unsigned int YARD = BASE_PER_YARD;
-const unsigned int FEET = BASE_PER_FEET;
-const unsigned int INCH = BASE_PER_INCH;
+const unsigned int MILE = MILE_CONV_FACTOR;
+const unsigned int YARD = YARD_CONV_FACTOR;
+const unsigned int FEET = FEET_CONV_FACTOR;
+const unsigned int INCH = INCH_CONV_FACTOR;
 
 struct Length
 {
