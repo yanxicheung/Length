@@ -6,6 +6,9 @@
 const unsigned int YARDS_PER_MILE = 1760;
 const unsigned int YARDS_PER_YARD = 1;
 
+const unsigned int MILE = YARDS_PER_MILE;
+const unsigned int YARD = YARDS_PER_YARD;
+
 struct Length
 {
     Length(const Amount &amount,unsigned int conversionFactor);

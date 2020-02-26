@@ -34,15 +34,9 @@ using Amount = unsigned int;
 
   让客户不再依赖具体的类型，而是提供一个抽像，只是抽象的背后的本质仍然是`unsigned int`。
 
-  
-
   数量现在已经由一个抽象数据类型`Amount`来表示。别名技术可以解决它变化的问题。不过，以`double`来表示数量就完全没有可能是一个类吗？`double` 的精度控制问题难道不是`Amount`的职责吗？
 
-  
-
   既然`Amount`向类变化的可能性是存在的，那么我们就需要考虑：如果它变成类，我们需要付出什么样的代价来应对它？
-
-  
 
   我们似乎无须为之做任何事情，即使`Amount`是一个类，但既然它本质上应该是一个数值，那么它就应该支持所有的数值计算。       
 
@@ -84,6 +78,8 @@ private:
 
 至于`Yard `和 `Mile`的实现只需要将各自的`amount`转换成`Length`要求的基本单位即可。
 
+
+
 #### 提高表现力：
 
 ```c++
@@ -96,6 +92,8 @@ Mile::Mile(const Amount& amount):Length(amount*YARDS_PER_MILE)
 
 1760是一个magic number，应该定义一个常量使其语义更加明确。
 
+
+
 #### 消除冗余：
 
 目前对于`Mile`和`Yard`他们的唯一职责就是将自己的单位转换成基准单位，`Mile`和`Yard`的实现仅仅是转换系数的不同：
@@ -105,7 +103,7 @@ Mile::Mile(const Amount& amount):Length(amount*YARDS_PER_MILE){}
 Yard::Yard(const Amount& amount):Length(amount*YARDS_PER_YARD){}
 ```
 
-我们可以将这个实现转换成`Length`的一个构造函数。这样**将自己单位转换成基准单位**的这个职责现在由基类`Length`承担。
+我们可以将这个实现转换成`Length`的一个构造函数。这样**将单位转换成基准单位**的这个职责现在由基类`Length`承担。
 
 ```c++
 Length::Length(const Amount& amount, unsigned int conversionFactor):
@@ -116,7 +114,46 @@ amountInBaseUnit(amount*conversionFactor)
 
 至此`Mile`和`Yard`不再承担任何职责，可以将他们删除了。
 
+
+
 #### 提高UI表现力：
+
+现在我们将UI定义为：
+
+```c++
+ASSERT_TRUE(Length(3,YARDS_PER_YARD) == Length(3,YARDS_PER_YARD));
+ASSERT_TRUE(Length(1,YARDS_PER_MILE) == Length(1760,YARDS_PER_YARD));
+ASSERT_TRUE(Length(1760,YARDS_PER_YARD) == Length(1,YARDS_PER_MILE));
+```
+
+简单阅读下用例，会发现这个UI存在如下问题：
+
+- 用户需要知道策略是向`Yard`转换的
+- `Length(3,YARDS_PER_YARD)`不容易理解
+
+前者增加了不必要的**耦合**，后者造成了**糟糕的表现力**。
+
+解决耦合问题，我们可以使用正交设计原则的一个策略：**向着稳定的方向依赖** ，什么稳定？一个更加抽象的名字，而不是与实现细节有关的更加具体，更不稳定的名字。
+
+当然一个好的名字，会更有表现力。
+
+所以，如果我们将转换系数定义为更有表现力的常量，上述问题将迎刃而解。
+
+```c++
+const unsigned int YARDS_PER_MILE = 1760;
+const unsigned int YARDS_PER_YARD = 1;
+
+const unsigned int MILE = YARDS_PER_MILE;
+const unsigned int YARD = YARDS_PER_YARD;
+```
+
+用例调整为：
+
+```c++
+ASSERT_TRUE(Length(3,YARD) == Length(3,YARD));
+ASSERT_TRUE(Length(1,MILE) == Length(1760,YARD));
+ASSERT_TRUE(Length(1760,YARD) == Length(1,MILE));
+```
 
 
 
