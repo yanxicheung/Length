@@ -35,4 +35,19 @@ TEST_F(YardTest,should_not_equal)
     ASSERT_TRUE(Length(1,MILE) != Length(1761,YARD));
     ASSERT_TRUE(Length(1761,YARD) != Length(1,MILE));
 }
+////////////////////////////////////
+
+struct FeetInchTest:testing::Test
+{
+
+};
+
+TEST_F(FeetInchTest,should_equal)
+{
+    ASSERT_TRUE(Length(1,YARD) == Length(3,FEET));
+    ASSERT_TRUE(Length(1,FEET) == Length(12,INCH));
+}
+
+
+
 
