@@ -161,7 +161,77 @@ ASSERT_TRUE(Length(1760,YARD) == Length(1,MILE));
 
 增加两个新的单位，Feet和Inch，用户可以使用他们作为单位来表现一个长度。其中：
 
-- 1 Yard == 3Feet
+- 1 Yard == 3 Feet
 - 1 Feet == 12 Inch
 - 当以Feet为单位来表达长度单位时，精度为1 Feet
 - 当以Inch为单位来表达长度单位时，精度为1 Inch
+
+### 设计考虑：
+
+#### 准确命名：
+
+现在，我们来看看这些常量的定义，会发现：每个常量都定义了一个单位向基准单位转换的转换系数，但是其名字却与转换系数没有任何关系：
+
+```c++
+const unsigned int BASE_UNIT = 1;
+const unsigned int BASE_PER_INCH = BASE_UNIT;
+const unsigned int BASE_PER_FEET = 12 * BASE_PER_INCH;
+const unsigned int BASE_PER_YARD = 3 * BASE_PER_FEET;
+const unsigned int BASE_PER_MILE = 1760 * BASE_PER_YARD;
+```
+
+这会让读者感到困惑，这种不直观背后隐藏着由于设计方式带来的**隐性知识**，为了消除这种困惑，我们需要把知识**显性化**：让命名更加准确：
+
+```c++
+const unsigned int BASE_CONV_FACTOR = 1;
+const unsigned int INCH_CONV_FACTOR = BASE_CONV_FACTOR;
+const unsigned int FEET_CONV_FACTOR = 12 * INCH_CONV_FACTOR;
+const unsigned int YARD_CONV_FACTOR = 3 * FEET_CONV_FACTOR;
+const unsigned int MILE_CONV_FACTOR = 1760 * YARD_CONV_FACTOR;
+```
+
+#### 以类取代类型码：
+
+从UI的角度来看，`YARD`代表的是一个长度单位，但是`Length`的第二个参数在实现上却是一个转换系数。这是一种矛盾，是由于**问题域和设计域没有实现无缝对接** 。
+
+```c++
+ASSERT_TRUE(Length(3,YARD) != Length(4,YARD));
+```
+
+那如何将用户关注的**长度单位**这个概念与实现所需要的**转换系数**联系在一起呢？？
+
+在OO范式下，我们很容易想到类：增加一个用来代表长度单位概念的类，再把转换系数当作类的内部实现隐藏起来，就可以将两个概念联系在一起了。
+
+代码实现为：
+
+```c++
+/////////////////LengthUnit.h////////////////////
+struct LengthUnit
+{
+    explicit LengthUnit(unsigned int conversionFactor);
+    unsigned int getConversionFactor() const;
+private:
+    unsigned int conversionFactor;
+};
+
+static LengthUnit MILE(MILE_CONV_FACTOR);
+static LengthUnit YARD(YARD_CONV_FACTOR);
+static LengthUnit FEET(FEET_CONV_FACTOR);
+static LengthUnit INCH(INCH_CONV_FACTOR);
+/////////////////Length.cpp///////////////////////
+bool Length::operator ==(const Length& rhs) const
+{
+    return this->amountInBaseUnit == rhs.amountInBaseUnit;
+}
+
+bool Length::operator !=(const Length& rhs) const
+{
+    return not this->operator ==(rhs);
+}
+
+Length::Length(const Amount& amount, const LengthUnit&unit):
+amountInBaseUnit(amount*unit.getConversionFactor())
+{
+}
+```
+
