@@ -235,3 +235,28 @@ amountInBaseUnit(amount*unit.getConversionFactor())
 }
 ```
 
+#### 依赖管理：
+
+在`LengthUnit`中，我们看到了`Getter`方法，这是一种破坏封装的强烈的坏味道：
+
+```c++
+struct LengthUnit
+{
+    explicit LengthUnit(unsigned int conversionFactor);
+    unsigned int getConversionFactor() const;
+private:
+    unsigned int conversionFactor;
+};
+```
+
+之前使用这种方案是为了快速重构，在管理学中分析问题时，经常采用**5 Why** 分析法，通过不断问问题找到问题发生的根源。我们采用这种方式：
+
+1. Q：`Length`为什么需要`LengthUnit`提供`Getter`来获得转换系数？
+
+   A：因为`Length`需要使用这个转换系数，将原有单位转换为基准单位。
+
+2. Q: 既然`Length`真正需要的是**转换**这件事，为什么不让`LengthUnit`来提供这个服务，却要自己来通过`Getter`来获得转换系数，然后自己来做转换呢？？
+
+   A: Sounds Good...
+
+3. 结论：向稳定方向依赖，让`Length`来依赖一个更具本质的需要：**转换** ,相对于依赖**转换系数**这个细节，其更加稳定。

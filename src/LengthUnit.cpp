@@ -3,9 +3,8 @@ LengthUnit::LengthUnit(unsigned int conversionFactor)
 {
     this->conversionFactor = conversionFactor;
 }
-unsigned int LengthUnit::getConversionFactor() const
+
+unsigned int LengthUnit::getAmountInBaseUnit(const Amount&amount) const
 {
-    return conversionFactor;
+    return amount * conversionFactor;
 }
-
-

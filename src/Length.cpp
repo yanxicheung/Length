@@ -11,6 +11,6 @@ bool Length::operator !=(const Length& rhs) const
 }
 
 Length::Length(const Amount& amount, const LengthUnit&unit):
-amountInBaseUnit(amount*unit.getConversionFactor())
+amountInBaseUnit(unit.getAmountInBaseUnit(amount))
 {
 }
