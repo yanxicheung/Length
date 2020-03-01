@@ -1,5 +1,6 @@
 #include "Length.h"
 #include "LengthUnit.h"
+
 bool Length::operator ==(const Length& rhs) const
 {
     return this->amountInBaseUnit == rhs.amountInBaseUnit;

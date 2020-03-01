@@ -2,12 +2,17 @@
 
 namespace
 {
+#define CONV_FACTOR(unit)   unit##_CONV_FACTOR
+#define DEF_CONV_FACTOR(unit,eq,factor,refUnit)         \
+const unsigned int CONV_FACTOR(unit) = factor*CONV_FACTOR(refUnit);
+
     const unsigned int BASE_CONV_FACTOR = 1;
-    const unsigned int INCH_CONV_FACTOR = BASE_CONV_FACTOR;
-    const unsigned int FEET_CONV_FACTOR = 12 * INCH_CONV_FACTOR;
-    const unsigned int YARD_CONV_FACTOR = 3 * FEET_CONV_FACTOR;
-    const unsigned int MILE_CONV_FACTOR = 1760 * YARD_CONV_FACTOR;
+    DEF_CONV_FACTOR(Inch, =, 1, BASE)
+    DEF_CONV_FACTOR(Feet, =, 12, Inch)
+    DEF_CONV_FACTOR(Yard, =, 3, Feet)
+    DEF_CONV_FACTOR(Mile, =, 1760, Yard)
 }
+
 LengthUnit::LengthUnit(unsigned int conversionFactor)
 {
     this->conversionFactor = conversionFactor;
@@ -18,26 +23,14 @@ unsigned int LengthUnit::getAmountInBaseUnit(const Amount&amount) const
     return amount * conversionFactor;
 }
 
-const LengthUnit& LengthUnit::getMile()
-{
-    static LengthUnit Mile(MILE_CONV_FACTOR);
-    return Mile;
+#define DEF_UNIT_SLUG(unit)                    \
+const LengthUnit & LengthUnit::get##unit()     \
+{                                               \
+    static LengthUnit unit(CONV_FACTOR(unit)); \
+    return unit;                               \
 }
 
-const LengthUnit& LengthUnit::getYard()
-{
-    static LengthUnit Yard(YARD_CONV_FACTOR);
-    return Yard;
-}
-
-const LengthUnit& LengthUnit::getFeet()
-{
-    static LengthUnit Feet(FEET_CONV_FACTOR);
-    return Feet;
-}
-
-const LengthUnit& LengthUnit::getInch()
-{
-    static LengthUnit Inch(INCH_CONV_FACTOR);
-    return Inch;
-}
+DEF_UNIT_SLUG(Mile)
+DEF_UNIT_SLUG(Yard)
+DEF_UNIT_SLUG(Feet)
+DEF_UNIT_SLUG(Inch)
