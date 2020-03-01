@@ -10,6 +10,7 @@ struct Length
     Length(const Amount &amount,const LengthUnit&unit);
     bool operator==(const Length&rhs) const;
     bool operator!=(const Length&rhs) const;
+    Length operator+(const Length &rhs);
 private:
     Amount amountInBaseUnit;
 };

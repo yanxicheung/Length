@@ -14,4 +14,11 @@ bool Length::operator !=(const Length& rhs) const
 Length::Length(const Amount& amount, const LengthUnit&unit):
 amountInBaseUnit(unit.getAmountInBaseUnit(amount))
 {
+
+}
+
+Length Length::operator +(const Length& rhs)
+{
+    Amount amount = this->amountInBaseUnit + rhs.amountInBaseUnit;
+    return Length(amount,INCH);
 }
