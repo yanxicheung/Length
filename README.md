@@ -307,3 +307,48 @@ private:
 
 - `13 Inch + 11 Inch  = 2 Feet`
 - `3 Feet + 2 Yard = 3 Yard`
+
+### 设计考虑：
+
+#### 知识重复：
+
+仔细审视，当前代码似乎没有什么重复，但是如果仔细审视，就会发现一个`Bad Smell`。在加法实现的最后一行有这样一个表达式：`Length(amount,INCH)`
+
+`Length`的第二个参数，使用了当前基准单位：`INCH`;
+
+**INCH是Length的当前基准单位**是当前系统的一项知识，系统中有两个地方对这个知识进行了直接描述：
+
+```c++
+///////Length.cpp//////
+Length Length::operator +(const Length& rhs)
+{
+    Amount amount = this->amountInBaseUnit + rhs.amountInBaseUnit;
+    return Length(amount,INCH);
+}
+///////LengthUnit.cpp//////
+DEF_CONV_FACTOR(Inch, =, 1, BASE)
+```
+
+二者都依赖了这个知识，当这个只是发生变化的时候，`LengthUnit`和`Length`都需要进行修改，所以这是一种重复。
+
+按照`DRY`原则，这个知识只应该存在一个明确而权威的表示：
+
+很明显，`LengthUnit`应该是这个知识的唯一描述，加法运算需要的是**当前基准单位**这个抽象概念，而不是**INCH作为当前基准长度单位**这个不稳定的知识。
+
+向着稳定的方向依赖，`Length`应当依赖于`LengthUnit`提供的**当前基准长度单位**这个概念。如下：
+
+```c++
+///////Length.cpp////////
+Length Length::operator +(const Length& rhs)
+{
+    Amount amount = this->amountInBaseUnit + rhs.amountInBaseUnit;
+    return Length(amount,LengthUnit::getBaseUnit());
+}
+
+///////LengthUnit.cpp//////
+const LengthUnit& LengthUnit::getBaseUnit()
+{
+    return getInch();
+}
+```
+

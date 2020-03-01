@@ -13,6 +13,7 @@
 struct LengthUnit
 {
     unsigned int getAmountInBaseUnit(const Amount&amount) const;
+    static const LengthUnit &getBaseUnit();
     DECL_UNIT_SLUG(Mile)
     DECL_UNIT_SLUG(Yard)
     DECL_UNIT_SLUG(Feet)

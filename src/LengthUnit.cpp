@@ -13,6 +13,11 @@ const unsigned int CONV_FACTOR(unit) = factor*CONV_FACTOR(refUnit);
     DEF_CONV_FACTOR(Mile, =, 1760, Yard)
 }
 
+const LengthUnit& LengthUnit::getBaseUnit()
+{
+    return getInch();
+}
+
 LengthUnit::LengthUnit(unsigned int conversionFactor)
 {
     this->conversionFactor = conversionFactor;
@@ -34,3 +39,4 @@ DEF_UNIT_SLUG(Mile)
 DEF_UNIT_SLUG(Yard)
 DEF_UNIT_SLUG(Feet)
 DEF_UNIT_SLUG(Inch)
+

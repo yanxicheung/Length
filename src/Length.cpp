@@ -20,5 +20,5 @@ amountInBaseUnit(unit.getAmountInBaseUnit(amount))
 Length Length::operator +(const Length& rhs)
 {
     Amount amount = this->amountInBaseUnit + rhs.amountInBaseUnit;
-    return Length(amount,INCH);
+    return Length(amount,LengthUnit::getBaseUnit());
 }
