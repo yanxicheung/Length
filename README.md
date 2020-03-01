@@ -257,6 +257,42 @@ private:
 
 2. Q: 既然`Length`真正需要的是**转换**这件事，为什么不让`LengthUnit`来提供这个服务，却要自己来通过`Getter`来获得转换系数，然后自己来做转换呢？？
 
-   A: Sounds Good...
+   A: **Sounds Good...**
 
 3. 结论：向稳定方向依赖，让`Length`来依赖一个更具本质的需要：**转换** ,相对于依赖**转换系数**这个细节，其更加稳定。
+
+
+
+## 需求四：
+
+要求用户只能使用既有的单位(`Mile`,`Yard`,`Feet`,`Inch`)，而不该有能力创建新的单位；避免用户由于某些原因创建一些不存在的单位，从而让系统变得令人难以理解。
+
+### 设计考虑：
+
+#### Slug：
+
+这是一个非功能需求，不允许用户创建额外的`LengthUnit`对象。这样的需求，在使用C++来实现的范式时，让`LengthUnit` 的构造函数变为私有，这样在`LengthUnit`的外部，就无法创建任何`LengthUnit`对象，即使是通过继承也不行。
+
+```c++
+struct LengthUnit
+{
+    unsigned int getAmountInBaseUnit(const Amount&amount) const;
+    static const LengthUnit & getMile();
+    static const LengthUnit & getYard();
+    static const LengthUnit & getFeet();
+    static const LengthUnit & getInch();
+private:
+    explicit LengthUnit(unsigned int conversionFactor);
+private:
+    unsigned int conversionFactor;
+};
+
+#define MILE   (LengthUnit::getMile())
+#define YARD   (LengthUnit::getYard())
+#define FEET   (LengthUnit::getFeet())
+#define INCH   (LengthUnit::getInch())
+```
+
+处理这类问题的方法，被称为Slug模式。
+
+#### 消除重复：
