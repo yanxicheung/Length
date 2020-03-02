@@ -12,7 +12,11 @@ struct Length
     bool operator!=(const Length&rhs) const;
     Length operator+(const Length &rhs);
 private:
-    Amount amountInBaseUnit;
+    Amount toAmountInBaseUnit() const;
+
+private:
+    Amount amount;
+    const LengthUnit &m_unit;
 };
 
 #endif /* HB7B07D22_8FDA_47C8_B6B8_7F95F0C29F00 */

@@ -3,7 +3,7 @@
 
 bool Length::operator ==(const Length& rhs) const
 {
-    return this->amountInBaseUnit == rhs.amountInBaseUnit;
+    return toAmountInBaseUnit() == rhs.toAmountInBaseUnit();
 }
 
 bool Length::operator !=(const Length& rhs) const
@@ -12,13 +12,18 @@ bool Length::operator !=(const Length& rhs) const
 }
 
 Length::Length(const Amount& amount, const LengthUnit&unit):
-amountInBaseUnit(unit.getAmountInBaseUnit(amount))
+amount(amount),m_unit(unit)
 {
 
 }
 
 Length Length::operator +(const Length& rhs)
 {
-    Amount amount = this->amountInBaseUnit + rhs.amountInBaseUnit;
-    return Length(amount,LengthUnit::getBaseUnit());
+    Amount amountInBaseUnit = toAmountInBaseUnit() + rhs.toAmountInBaseUnit();
+    return Length(amountInBaseUnit,m_unit.getBaseUnit());
+}
+
+Amount Length::toAmountInBaseUnit() const
+{
+   return m_unit.toAmountInBaseUnit(amount);
 }

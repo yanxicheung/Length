@@ -1,42 +1,53 @@
 #include "LengthUnit.h"
 
-namespace
+const LengthUnit& LengthUnit::getBaseUnit() const
 {
-#define CONV_FACTOR(unit)   unit##_CONV_FACTOR
-#define DEF_CONV_FACTOR(unit,eq,factor,refUnit)         \
-const unsigned int CONV_FACTOR(unit) = factor*CONV_FACTOR(refUnit);
-
-    const unsigned int BASE_CONV_FACTOR = 1;
-    DEF_CONV_FACTOR(Inch, =, 1, BASE)
-    DEF_CONV_FACTOR(Feet, =, 12, Inch)
-    DEF_CONV_FACTOR(Yard, =, 3, Feet)
-    DEF_CONV_FACTOR(Mile, =, 1760, Yard)
+    if(m_baseUnit == nullptr) return *this;
+    return m_baseUnit->getBaseUnit();
 }
 
-const LengthUnit& LengthUnit::getBaseUnit()
+LengthUnit::LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit):
+conversionFactor(conversionFactor),m_baseUnit(&baseUnit)
 {
-    return getInch();
 }
 
-LengthUnit::LengthUnit(unsigned int conversionFactor)
+LengthUnit::LengthUnit():
+conversionFactor(1),m_baseUnit(nullptr)
 {
-    this->conversionFactor = conversionFactor;
 }
 
-unsigned int LengthUnit::getAmountInBaseUnit(const Amount&amount) const
+unsigned int LengthUnit::toAmountInBaseUnit(const Amount&amount) const
 {
-    return amount * conversionFactor;
+    return amount * getConversionFactor();
 }
 
-#define DEF_UNIT_SLUG(unit)                    \
-const LengthUnit & LengthUnit::get##unit()     \
-{                                               \
-    static LengthUnit unit(CONV_FACTOR(unit)); \
-    return unit;                               \
+unsigned int LengthUnit::getConversionFactor() const
+{
+    if(m_baseUnit == nullptr) return 1;
+    return m_baseUnit->toAmountInBaseUnit(conversionFactor);
 }
 
-DEF_UNIT_SLUG(Mile)
-DEF_UNIT_SLUG(Yard)
-DEF_UNIT_SLUG(Feet)
-DEF_UNIT_SLUG(Inch)
+const LengthUnit & LengthUnit::getMile()
+{
+    static LengthUnit Mile(1760,getYard());
+    return Mile;
+}
+
+const LengthUnit & LengthUnit::getYard()
+{
+    static LengthUnit Yard(3,getFeet());
+    return Yard;
+}
+
+const LengthUnit & LengthUnit::getFeet()
+{
+    static LengthUnit Feet(12,getInch());
+    return Feet;
+}
+
+const LengthUnit & LengthUnit::getInch()
+{
+    static LengthUnit Inch;
+    return Inch;
+}
 

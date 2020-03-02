@@ -12,16 +12,19 @@
 
 struct LengthUnit
 {
-    unsigned int getAmountInBaseUnit(const Amount&amount) const;
-    static const LengthUnit &getBaseUnit();
+    unsigned int toAmountInBaseUnit(const Amount&amount) const;
+    const LengthUnit &getBaseUnit() const;
     DECL_UNIT_SLUG(Mile)
     DECL_UNIT_SLUG(Yard)
     DECL_UNIT_SLUG(Feet)
     DECL_UNIT_SLUG(Inch)
 private:
-    explicit LengthUnit(unsigned int conversionFactor);
+    explicit LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit);
+    explicit LengthUnit();
+    unsigned int getConversionFactor() const;
 private:
     unsigned int conversionFactor;
+    const LengthUnit* const m_baseUnit;
 };
 
 
