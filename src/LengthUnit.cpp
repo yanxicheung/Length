@@ -1,19 +1,36 @@
 #include "LengthUnit.h"
-
-const LengthUnit& LengthUnit::getBaseUnit() const
+namespace
 {
-    if(m_baseUnit == nullptr) return *this;
-    return m_baseUnit->getBaseUnit();
+    struct LengthBaseUnit:AbstractLengthUnit
+    {
+        LengthBaseUnit(const LengthUnit&baseUnit)
+        :m_baseUnit(baseUnit){}
+        unsigned int toAmountInBaseUnit(const Amount&amount) const
+        {
+            return amount;
+        }
+        const LengthUnit &getBaseUnit() const
+        {
+            return m_baseUnit;
+        }
+    private:
+        const LengthUnit &m_baseUnit;
+    };
 }
 
 LengthUnit::LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit):
-conversionFactor(conversionFactor),m_baseUnit(&baseUnit)
-{
-}
+conversionFactor(conversionFactor),
+m_isBaseUnit(false),
+m_baseUnit(&baseUnit){}
 
 LengthUnit::LengthUnit():
-conversionFactor(1),m_baseUnit(nullptr)
+conversionFactor(1),
+m_isBaseUnit(true),
+m_baseUnit(new LengthBaseUnit(*this)){}
+
+LengthUnit::~LengthUnit()
 {
+    if(m_isBaseUnit) delete m_baseUnit;
 }
 
 unsigned int LengthUnit::toAmountInBaseUnit(const Amount&amount) const
@@ -21,9 +38,13 @@ unsigned int LengthUnit::toAmountInBaseUnit(const Amount&amount) const
     return amount * getConversionFactor();
 }
 
+const LengthUnit& LengthUnit::getBaseUnit() const
+{
+    return m_baseUnit->getBaseUnit();
+}
+
 unsigned int LengthUnit::getConversionFactor() const
 {
-    if(m_baseUnit == nullptr) return 1;
     return m_baseUnit->toAmountInBaseUnit(conversionFactor);
 }
 
@@ -50,4 +71,5 @@ const LengthUnit & LengthUnit::getInch()
     static LengthUnit Inch;
     return Inch;
 }
+
 

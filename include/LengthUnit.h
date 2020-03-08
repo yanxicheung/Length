@@ -2,7 +2,7 @@
 #define H8CC5B1B1_F426_4D7A_B542_E8FCF9CB1FC1
 
 #include "Amount.h"
-
+#include "AbstractLengthUnit.h"
 #define DECL_UNIT_SLUG(unit)  static const LengthUnit & get##unit();
 
 #define MILE   (LengthUnit::getMile())
@@ -10,7 +10,7 @@
 #define FEET   (LengthUnit::getFeet())
 #define INCH   (LengthUnit::getInch())
 
-struct LengthUnit
+struct LengthUnit : AbstractLengthUnit
 {
     unsigned int toAmountInBaseUnit(const Amount&amount) const;
     const LengthUnit &getBaseUnit() const;
@@ -22,9 +22,11 @@ private:
     explicit LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit);
     explicit LengthUnit();
     unsigned int getConversionFactor() const;
+    ~LengthUnit();
 private:
     unsigned int conversionFactor;
-    const LengthUnit* const m_baseUnit;
+    bool m_isBaseUnit;
+    const AbstractLengthUnit* const m_baseUnit;
 };
 
 
