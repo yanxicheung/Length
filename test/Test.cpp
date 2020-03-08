@@ -61,6 +61,3 @@ TEST_F(LengthAddTest,should_equal)
     ASSERT_TRUE(Length(13,INCH) + Length(11,INCH) == Length(2,FEET));
     ASSERT_TRUE(Length(3,FEET) + Length(2,YARD) == Length(3,YARD));
 }
-
-
-

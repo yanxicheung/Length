@@ -2,8 +2,6 @@
 #define H8CC5B1B1_F426_4D7A_B542_E8FCF9CB1FC1
 
 #include "Amount.h"
-#include "AbstractLengthUnit.h"
-#include "DelegatePointer.h"
 
 #define DECL_UNIT_SLUG(unit)  static const LengthUnit & get##unit();
 
@@ -12,7 +10,9 @@
 #define FEET   (LengthUnit::getFeet())
 #define INCH   (LengthUnit::getInch())
 
-struct LengthUnit : AbstractLengthUnit
+struct AbstractLengthUnit;
+
+struct LengthUnit
 {
     unsigned int toAmountInBaseUnit(const Amount&amount) const;
     const LengthUnit &getBaseUnit() const;
@@ -23,10 +23,9 @@ struct LengthUnit : AbstractLengthUnit
 private:
     explicit LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit);
     explicit LengthUnit();
-    unsigned int getConversionFactor() const;
+    ~LengthUnit();
 private:
-    unsigned int conversionFactor;
-    DelegatePointer< const AbstractLengthUnit* const> m_baseUnit;
+    const AbstractLengthUnit* const THIS;
 };
 
 

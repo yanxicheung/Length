@@ -1,6 +1,7 @@
 #ifndef HFB7CE5DF_5761_44E0_B0D2_9AFBDB1E7D01
 #define HFB7CE5DF_5761_44E0_B0D2_9AFBDB1E7D01
-
+#include <iostream>
+using namespace std;
 template<typename T>
 struct DelegatePointer
 {
@@ -20,7 +21,7 @@ struct DelegatePointer
 
     ~DelegatePointer()
     {
-        if(m_shouldDelete) delete m_pointer;
+        if(m_shouldDelete) {delete m_pointer;cout<<"delete"<<endl;}
     }
 private:
     DelegatePointer(const DelegatePointer&p);

@@ -1,46 +1,69 @@
 #include "LengthUnit.h"
+
+struct AbstractLengthUnit
+{
+    virtual unsigned int getConversionFactor() const = 0;
+    virtual const LengthUnit& getBaseUnit(const LengthUnit& unit) const = 0;
+    virtual ~AbstractLengthUnit(){}
+};
+
 namespace
 {
-    struct LengthBaseUnit:AbstractLengthUnit
+    const unsigned int BASE_UNIT_CONV_FACTOR = 1;
+
+    struct BaseUnit:AbstractLengthUnit
     {
-        LengthBaseUnit(const LengthUnit&baseUnit)
-        :m_baseUnit(baseUnit){}
-        unsigned int toAmountInBaseUnit(const Amount&amount) const
+        unsigned int getConversionFactor() const
         {
-            return amount;
+            return BASE_UNIT_CONV_FACTOR;
         }
-        const LengthUnit &getBaseUnit() const
+
+        const LengthUnit& getBaseUnit(const LengthUnit& unit) const
         {
-            return m_baseUnit;
+            return unit;
+        }
+    };
+
+    struct NonBaseUnit:AbstractLengthUnit
+    {
+        NonBaseUnit(unsigned int conversionFactor, const LengthUnit& refUnit):
+        conversionFactor(conversionFactor),
+        m_refUnit(refUnit){}
+
+        unsigned int getConversionFactor() const
+        {
+            return m_refUnit.toAmountInBaseUnit(conversionFactor);
+        }
+
+        const LengthUnit& getBaseUnit(const LengthUnit& unit) const
+        {
+            return m_refUnit.getBaseUnit();
         }
     private:
-        const LengthUnit &m_baseUnit;
+        unsigned int conversionFactor;
+        const LengthUnit&m_refUnit;
     };
 }
 
 LengthUnit::LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit):
-conversionFactor(conversionFactor),
-m_baseUnit(&baseUnit){}
+THIS(new NonBaseUnit(conversionFactor,baseUnit)){}
 
-LengthUnit::LengthUnit():
-conversionFactor(1),
-m_baseUnit(new LengthBaseUnit(*this),true){}
+LengthUnit::LengthUnit():THIS(new BaseUnit()){}
 
 unsigned int LengthUnit::toAmountInBaseUnit(const Amount&amount) const
 {
-    return amount * getConversionFactor();
+    return amount * THIS->getConversionFactor();
 }
 
 const LengthUnit& LengthUnit::getBaseUnit() const
 {
-    return m_baseUnit->getBaseUnit();
+    return THIS->getBaseUnit(*this);
 }
 
-unsigned int LengthUnit::getConversionFactor() const
+LengthUnit::~LengthUnit()
 {
-    return m_baseUnit->toAmountInBaseUnit(conversionFactor);
+    delete THIS;
 }
-
 const LengthUnit & LengthUnit::getMile()
 {
     static LengthUnit Mile(1760,getYard());
