@@ -3,6 +3,8 @@
 
 #include "Amount.h"
 #include "AbstractLengthUnit.h"
+#include "DelegatePointer.h"
+
 #define DECL_UNIT_SLUG(unit)  static const LengthUnit & get##unit();
 
 #define MILE   (LengthUnit::getMile())
@@ -22,11 +24,9 @@ private:
     explicit LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit);
     explicit LengthUnit();
     unsigned int getConversionFactor() const;
-    ~LengthUnit();
 private:
     unsigned int conversionFactor;
-    bool m_isBaseUnit;
-    const AbstractLengthUnit* const m_baseUnit;
+    DelegatePointer< const AbstractLengthUnit* const> m_baseUnit;
 };
 
 

@@ -20,18 +20,11 @@ namespace
 
 LengthUnit::LengthUnit(unsigned int conversionFactor, const LengthUnit& baseUnit):
 conversionFactor(conversionFactor),
-m_isBaseUnit(false),
 m_baseUnit(&baseUnit){}
 
 LengthUnit::LengthUnit():
 conversionFactor(1),
-m_isBaseUnit(true),
-m_baseUnit(new LengthBaseUnit(*this)){}
-
-LengthUnit::~LengthUnit()
-{
-    if(m_isBaseUnit) delete m_baseUnit;
-}
+m_baseUnit(new LengthBaseUnit(*this),true){}
 
 unsigned int LengthUnit::toAmountInBaseUnit(const Amount&amount) const
 {
